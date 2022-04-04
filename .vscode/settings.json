@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "string.h": "c",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp"
+    }
+}
