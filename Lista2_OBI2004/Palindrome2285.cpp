@@ -4,17 +4,17 @@ using namespace std;
 
 char palindrome[2002];
 char aux[2002];
+int dp[2002][2002] = { -1 };
+
 bool testPalindrome(char * str, int pos_inicial, int pos_final) {
-    strncpy(aux, str+pos_inicial, pos_final - pos_inicial);
-    int tam = pos_final - pos_inicial;
-    if(tam == 1) {
-        return true;
+    if(dp[pos_inicial][pos_final-1] != -1) {
+        return dp[pos_inicial][pos_final-1];
+    } else if (testPalindrome(palindrome, pos_inicial + 1, pos_final - 1)) {
+        dp[pos_inicial][pos_final - 1] = palindrome[pos_inicial] == palindrome [pos_final - 1];
+    } else {
+        dp[pos_inicial][pos_final - 1] = 0;
     }
-    for(int i = 0; i < (tam)/2; i++)
-        if(aux[i] != aux[tam - i - 1]) {
-            return false;
-        }
-    return true;
+    return dp[pos_inicial][pos_final - 1];
 }
 
 
@@ -26,6 +26,7 @@ bool permuteArray(int n, int tam) {
     for(i = 0; i < tam; i++) {
         permuta[i] = true;
     }
+    
     while(true) {
         if(!prev_permutation(permuta, permuta + (n-1))) {
             break;
@@ -39,7 +40,6 @@ bool permuteArray(int n, int tam) {
                     break;
                 }
                 lim_inf = i+1;
-                continue;
             }
         }
         if(!dontFound) {
@@ -50,6 +50,27 @@ bool permuteArray(int n, int tam) {
         
     }
     return false;
+}
+
+bool testBestPalindrome(char * palindrome, int pos_inicial, int pos_final, int n) {
+    int tam = pos_final - pos_inicial + 1;
+    int i, j;
+
+    //cout << pos_inicial << " " << pos_final << endl;
+    //cout << tam << endl;
+
+    for (i = pos_inicial + 1; i <= pos_final; i++) {
+        for (j = n-1; j >= i; j--) {
+            //cout << i << "--" << j << endl;
+            if(dp[i][j]) {
+                if (tam < (j-i) + 1) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 int main() {
@@ -68,10 +89,70 @@ int main() {
             palindrome[k] = letter;
             k++;
         }
+
+        for(i = 0; i < n; i++) {
+            for (j = 0; j < n; j++) {
+                dp[i][j] = -1;
+                if( i == j) {
+                    dp[i][j] = 1;
+                }
+                if (j == i+1) {
+                    dp[i][j] =  palindrome[i] == palindrome[j];
+                }
+            }
+        }
+
+        int aux, pos = 0, cont = 0;
+
+        for (aux = 2; aux < n; aux++) {
+            for ( i = 0; i < n - aux; i++) {
+                testPalindrome(palindrome, i, (i+aux+1));
+            }
+        }
+        aux = 0;
+        /*
+        for( i = 0; i < n; i++) {
+            for (j = 0; j < n; j++){
+                if(dp[i][j] == -1)
+                    cout << dp[i][j] << " ";
+                else
+                    cout << dp[i][j] << " ";
+            }
+            cout << endl;
+        }*/
+
+        vector<int> set_lenghts(n);
+
+        for (i = 0; i < n; i++) {
+            for (j = i; j < n; j++) {
+                if(i == 0) {
+                    set_lenghts.push_back(1);
+                    break;
+                } else {
+                    aux = 0;
+                    for(k = i-1; k >= 0 ; k--) {
+                        if (dp[k][j]) {
+                            if (aux = 0)
+                                aux = set_lenghts[k];
+                            else if (aux > set_lenghts[k])
+
+                            //TO DO
+                        }
+                    }
+                }
+            }
+            cont++;
+            i = pos;
+            aux = pos+1;
+            pos++;
+        }
+
         test++;
         if(test > 1)
             printf("\n");
         printf("Teste %d\n",test);
+        
+        /*
         tam = 1;
         foundMin = false;
         if(!testPalindrome(palindrome, 0, n)) {
@@ -81,8 +162,10 @@ int main() {
                     foundMin = true;
                 }
             } while(!foundMin && tam < n);
-        } 
-        printf("%d\n",tam);
+        }
+        */
+ 
+        printf("%d\n",cont);
     }
     if(test > 0)
         printf("\n");
